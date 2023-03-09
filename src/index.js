@@ -1,64 +1,54 @@
+import { SVG } from "@svgdotjs/svg.js";
 import {
-  SVG,
-  extend as SVGextend,
-  Element as SVGElement,
-} from "@svgdotjs/svg.js";
-import { getDaysInMonth } from "date-fns";
-import { de } from "date-fns/locale";
+  format,
+  getDate,
+  getDay,
+  getDaysInMonth,
+  getDaysInYear,
+  getMonth,
+  parseISO,
+} from "date-fns";
+import { MONTHS, DAYS } from "./constants";
+import { THEMES } from "./themes";
 
-const THEMES = {
-  standard: {
-    background: "#ffffff",
-    text: "#000000",
-    boxBorderColor: "#1b1f230f",
-    level0: "#ebedf0",
-    level1: "#9be9a8",
-    level2: "#40c463",
-    level3: "#30a14e",
-    level4: "#216e39",
-  },
-};
-
-const drawContributionBox = ({
-  draw,
-  boxPositionX,
-  boxPositionY,
-  boxWidth = 10,
-  boxHeight = 10,
-  boxColor = "#ebedf0",
-  boxBorderColor = "#1b1f230f",
-  boxBorderWidth = 1,
-  boxBorderRadius = 2,
+export const drawContributionGraph = ({
+  data,
+  config: {
+    graphTheme = "standard",
+    graphMountElement = "body",
+    graphWidth = 717,
+    graphHeight = 130,
+  } = {},
 }) => {
-  const boxElement = draw
-    .rect(boxWidth, boxHeight)
-    .move(boxPositionX, boxPositionY)
-    .attr({
-      fill: boxColor,
-      stroke: boxBorderColor,
-      "stroke-width": boxBorderWidth,
-      rx: 2,
-    });
-};
+  // sort year high to low
+  const years = Object.keys(data).sort((a, b) => b - a);
+  if (!years.length) return;
 
-const drawMonths = (draw) => {};
+  years.forEach((year, ind) => {
+    drawContributionGraphForYear(data[year], year, {
+      graphTheme,
+      graphMountElement,
+      graphWidth,
+      graphHeight,
+    });
+  });
+};
 
 const drawContributionGraphForYear = (data, year, config) => {
   const { graphMountElement, graphWidth, graphHeight, graphTheme } = config;
 
   const draw = SVG().addTo(graphMountElement).size(graphWidth, graphHeight);
-  const selectedTheme = THEMES[graphTheme];
 
-  //   const dayTextHeight = 10;
   const dayTextMaxWidth = 28;
   const dayFont = { family: "Helvetica", size: 12 };
 
+  const monthTextMaxHeight = 14;
   const monthFont = { family: "Helvetica", size: 12 };
 
   const boxWidth = 10;
   const boxHeight = 10;
-  const boxGapX = 3;
-  const boxGapY = 3;
+  const boxGapX = 4;
+  const boxGapY = 4;
   const maxBoxesInColumn = 7;
 
   let offsetX = 0;
@@ -67,8 +57,6 @@ const drawContributionGraphForYear = (data, year, config) => {
   // draw days
   let daysOffsetX = offsetX;
   let daysOffsetY;
-
-  const DAYS = ["Mon", "Wed", "Fri"];
 
   for (let y = 0; y < DAYS.length; y++) {
     daysOffsetY =
@@ -84,21 +72,6 @@ const drawContributionGraphForYear = (data, year, config) => {
   let monthsOffsetX = boxGapX + offsetX;
   let monthsOffsetY = 0;
 
-  const MONTHS = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
   for (let x = 0; x < MONTHS.length; x++) {
     const numberOfDaysInMonth = getDaysInMonth(new Date(year, x));
     const { quotient } = getQuotientAndReminder(
@@ -112,9 +85,29 @@ const drawContributionGraphForYear = (data, year, config) => {
     monthsOffsetX = monthsOffsetX + quotient * (boxWidth + boxGapX) + boxGapX;
   }
 
+  offsetY += monthTextMaxHeight;
+
   // draw boxes
-  let boxOffsetX = offsetX;
-  let boxOffsetY = offsetY;
+  populateData(data, year);
+
+  const selectedTheme = THEMES[graphTheme];
+  const dayOfFirstDayOfYear = getDay(new Date(year, 0, 1));
+
+  let boxOffsetX = offsetX + boxGapX;
+  let boxOffsetY = offsetY + boxGapY;
+
+  // paint raw graph
+  //   for (let day = 0; day < numberOfDaysInYear; day++) {
+  //     for (let y = dayOfFirstDayOfYear; y < maxBoxesInColumn; y++) {
+  //       drawContributionBox({
+  //         draw,
+  //         boxPositionX: boxOffsetX,
+  //         boxPositionY: boxOffsetY,
+  //       });
+  //       boxOffsetY += y * (boxHeight + boxGapY);
+  //     }
+  //     boxOffsetX += day * (boxWidth + boxGapX);
+  //   }
 
   //   for (let x = 0; x < data.length; x++) {
   //     for (let y = 0; y < maxBoxesInColumn; y++) {
@@ -131,6 +124,29 @@ const drawContributionGraphForYear = (data, year, config) => {
   //   }
 };
 
+const drawDays = () => {};
+const drawMonths = () => {};
+const drawBoxes = () => {};
+
+const drawContributionBox = ({
+  draw,
+  boxPositionX,
+  boxPositionY,
+  boxWidth = 10,
+  boxHeight = 10,
+  boxColor = "#ebedf0",
+  boxBorderColor = "#1b1f230f",
+  boxBorderWidth = 1,
+  boxBorderRadius = 2,
+}) => {
+  draw.rect(boxWidth, boxHeight).move(boxPositionX, boxPositionY).attr({
+    fill: boxColor,
+    stroke: boxBorderColor,
+    "stroke-width": boxBorderWidth,
+    rx: 2,
+  });
+};
+
 const getQuotientAndReminder = (dividend, divisor) => {
   const rawQuotient = dividend / divisor;
   const reminder = rawQuotient % 1;
@@ -139,26 +155,52 @@ const getQuotientAndReminder = (dividend, divisor) => {
   return { quotient, reminder };
 };
 
-export const drawContributionGraph = ({
-  data,
-  config: {
-    graphTheme = "standard",
-    graphMountElement = "body",
-    graphWidth = 717,
-    graphHeight = 88,
-  } = {},
-}) => {
-  // sort year high to low
-  const years = Object.keys(data)
-    .sort((a, b) => a - b)
-    .reverse();
+const getIndexOfDayInYear = (date, year) => {
+  const monthIndex = getMonth(date);
+  const day = getDate(date);
 
-  years.forEach((year) => {
-    drawContributionGraphForYear(data, year, {
-      graphTheme,
-      graphMountElement,
-      graphWidth,
-      graphHeight,
-    });
+  let dayIndex = day;
+  for (let i = 0; i < monthIndex; i++) {
+    const numberOfDaysInMonth = getDaysInMonth(new Date(year, i));
+    dayIndex += numberOfDaysInMonth;
+  }
+
+  return dayIndex;
+};
+
+const populateData = (initialData, year) => {
+  //   const numberOfDaysInYear = getDaysInYear(new Date(year, 0, 1));
+  const daysInMonthInYear = MONTHS.map((month, ind) =>
+    getDaysInMonth(new Date(year, ind))
+  );
+
+  const filledEnteries = initialData
+    .map((d) => ({
+      dayIndex: getIndexOfDayInYear(parseISO(d.date), year),
+      ...d,
+    }))
+    .sort((a, b) => a.dayIndex - b.dayIndex);
+
+  let finalArr = [];
+
+  daysInMonthInYear.forEach((month, monthIndex) => {
+    for (let day = 1; day <= month; day++) {
+      const date = format(new Date(year, monthIndex, day), "yyyy-MM-dd");
+      const dayIndex = getIndexOfDayInYear(parseISO(date), year);
+
+      finalArr.push({
+        done: 0,
+        not_done: 0,
+        dayIndex,
+        date,
+      });
+    }
   });
+
+  // update filled values
+  filledEnteries.forEach((entry) => {
+    finalArr[entry.dayIndex - 1] = entry;
+  });
+
+  return finalArr;
 };
