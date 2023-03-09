@@ -40,10 +40,10 @@ const drawContributionGraphForYear = (data, year, config) => {
   const draw = SVG().addTo(graphMountElement).size(graphWidth, graphHeight);
 
   const dayTextMaxWidth = 28;
-  const dayFont = { family: "Helvetica", size: 12 };
+  const dayFont = { family: "Helvetica", size: 10 };
 
   const monthTextMaxHeight = 14;
-  const monthFont = { family: "Helvetica", size: 12 };
+  const monthFont = { family: "Helvetica", size: 10 };
 
   const boxWidth = 10;
   const boxHeight = 10;
@@ -60,7 +60,7 @@ const drawContributionGraphForYear = (data, year, config) => {
 
   for (let y = 0; y < DAYS.length; y++) {
     daysOffsetY =
-      (2 * y + 1) * boxHeight + 0.5 * boxHeight + 2 * (y + 1) * boxGapY;
+      (2 * y + 1) * boxHeight + 2 * (y + 1) * boxGapY + monthTextMaxHeight;
 
     const text = draw.text(DAYS[y]);
     text.font(dayFont).move(daysOffsetX, daysOffsetY);
@@ -96,28 +96,30 @@ const drawContributionGraphForYear = (data, year, config) => {
   }
 
   let boxOffsetX = offsetX + boxGapX;
+  let currBoxIndex = 0;
 
   for (let x = 0; x < totalColumns; x++) {
-    let boxOffsetY = offsetY + boxGapY;
+    let boxOffsetY =
+      x === 0
+        ? offsetY + boxGapY + dayOfFirstDayOfYear * (boxHeight + boxGapY)
+        : offsetY + boxGapY;
 
-    for (let y = dayOfFirstDayOfYear; y < maxBoxesInColumn; y++) {
+    let loopInitializer = x === 0 ? dayOfFirstDayOfYear : 0;
+    let loopCondition = maxBoxesInColumn;
+
+    for (let y = loopInitializer; y < loopCondition; y++) {
       drawContributionBox({
         draw,
         boxPositionX: boxOffsetX,
         boxPositionY: boxOffsetY,
-        boxColor: populatedData[y + x * maxBoxesInColumn].color,
-        done: populatedData[y + x * maxBoxesInColumn].done,
-        date: populatedData[y + x * maxBoxesInColumn].date,
+        boxData: populatedData[currBoxIndex],
       });
+      currBoxIndex++;
       boxOffsetY += boxHeight + boxGapY;
     }
     boxOffsetX += boxWidth + boxGapX;
   }
 };
-
-const drawDays = () => {};
-const drawMonths = () => {};
-const drawBoxes = () => {};
 
 const drawContributionBox = ({
   draw,
@@ -125,18 +127,19 @@ const drawContributionBox = ({
   boxPositionY,
   boxWidth = 10,
   boxHeight = 10,
-  boxColor = "#ebedf0",
   boxBorderColor = "#1b1f230f",
   boxBorderWidth = 1,
   boxBorderRadius = 2,
-  done,
-  date,
+  boxData,
 }) => {
-  draw
+  if (!boxData) return;
+  const { color, done, date } = boxData;
+
+  const boxElement = draw
     .rect(boxWidth, boxHeight)
     .move(boxPositionX, boxPositionY)
     .attr({
-      fill: boxColor,
+      fill: color,
       stroke: boxBorderColor,
       "stroke-width": boxBorderWidth,
       rx: 2,
@@ -146,6 +149,13 @@ const drawContributionBox = ({
         ? `${done} contributions on ${format(parseISO(date), "PPPP")}`
         : `no contributions on ${format(parseISO(date), "PPPP")}`,
     });
+
+  boxElement.css({
+    cursor: "pointer",
+  });
+  //   boxElement.mouseover((e) => {
+  //     console.log(e);
+  //   });
 };
 
 const getQuotientAndReminder = (dividend, divisor) => {
