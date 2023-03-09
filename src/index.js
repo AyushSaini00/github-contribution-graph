@@ -16,8 +16,8 @@ export const drawContributionGraph = ({
   config: {
     graphTheme = "standard",
     graphMountElement = "body",
-    graphWidth = 717,
-    graphHeight = 130,
+    graphWidth = 723,
+    graphHeight = 113,
   } = {},
 }) => {
   // sort year high to low
@@ -88,26 +88,34 @@ const drawContributionGraphForYear = (data, year, config) => {
   offsetY += monthTextMaxHeight;
 
   // draw boxes
-  populateData(data, year);
+  const populatedData = populateData(data, year, graphTheme);
 
-  const selectedTheme = THEMES[graphTheme];
   const dayOfFirstDayOfYear = getDay(new Date(year, 0, 1));
+
+  let totalColumns = Math.ceil(populatedData.length / maxBoxesInColumn);
+
+  if (dayOfFirstDayOfYear > 0) {
+    totalColumns += 1;
+  }
 
   let boxOffsetX = offsetX + boxGapX;
   let boxOffsetY = offsetY + boxGapY;
 
   // paint raw graph
-  //   for (let day = 0; day < numberOfDaysInYear; day++) {
-  //     for (let y = dayOfFirstDayOfYear; y < maxBoxesInColumn; y++) {
-  //       drawContributionBox({
-  //         draw,
-  //         boxPositionX: boxOffsetX,
-  //         boxPositionY: boxOffsetY,
-  //       });
-  //       boxOffsetY += y * (boxHeight + boxGapY);
-  //     }
-  //     boxOffsetX += day * (boxWidth + boxGapX);
-  //   }
+  for (let x = 0; x < totalColumns; x++) {
+    for (let y = dayOfFirstDayOfYear; y < maxBoxesInColumn; y++) {
+      drawContributionBox({
+        draw,
+        boxPositionX: boxOffsetX,
+        boxPositionY: boxOffsetY,
+        boxColor: populatedData[y + x * maxBoxesInColumn].color,
+        done: populatedData[y + x * maxBoxesInColumn].done,
+        date: populatedData[y + x * maxBoxesInColumn].date,
+      });
+      boxOffsetY = y * (boxHeight + boxGapY) + boxGapY;
+    }
+    boxOffsetX = x * (boxWidth + boxGapX) + boxGapX;
+  }
 
   //   for (let x = 0; x < data.length; x++) {
   //     for (let y = 0; y < maxBoxesInColumn; y++) {
@@ -138,13 +146,23 @@ const drawContributionBox = ({
   boxBorderColor = "#1b1f230f",
   boxBorderWidth = 1,
   boxBorderRadius = 2,
+  done,
+  date,
 }) => {
-  draw.rect(boxWidth, boxHeight).move(boxPositionX, boxPositionY).attr({
-    fill: boxColor,
-    stroke: boxBorderColor,
-    "stroke-width": boxBorderWidth,
-    rx: 2,
-  });
+  draw
+    .rect(boxWidth, boxHeight)
+    .move(boxPositionX, boxPositionY)
+    .attr({
+      fill: boxColor,
+      stroke: boxBorderColor,
+      "stroke-width": boxBorderWidth,
+      rx: 2,
+    })
+    .data({
+      "tooltip-text": done
+        ? `${done} contributions on ${format(parseISO(date), "PPPP")}`
+        : `no contributions on ${format(parseISO(date), "PPPP")}`,
+    });
 };
 
 const getQuotientAndReminder = (dividend, divisor) => {
@@ -168,18 +186,12 @@ const getIndexOfDayInYear = (date, year) => {
   return dayIndex;
 };
 
-const populateData = (initialData, year) => {
+const populateData = (initialData, year, graphTheme) => {
+  const selectedTheme = THEMES[graphTheme];
   //   const numberOfDaysInYear = getDaysInYear(new Date(year, 0, 1));
   const daysInMonthInYear = MONTHS.map((month, ind) =>
     getDaysInMonth(new Date(year, ind))
   );
-
-  const filledEnteries = initialData
-    .map((d) => ({
-      dayIndex: getIndexOfDayInYear(parseISO(d.date), year),
-      ...d,
-    }))
-    .sort((a, b) => a.dayIndex - b.dayIndex);
 
   let finalArr = [];
 
@@ -193,9 +205,19 @@ const populateData = (initialData, year) => {
         not_done: 0,
         dayIndex,
         date,
+        color: selectedTheme.level0,
       });
     }
   });
+
+  const maxValueOfDone = initialData.sort((a, b) => b.done - a.done)[0].done;
+  const filledEnteries = initialData
+    .map((d) => ({
+      dayIndex: getIndexOfDayInYear(parseISO(d.date), year),
+      color: getBoxColor(d.done, maxValueOfDone, selectedTheme),
+      ...d,
+    }))
+    .sort((a, b) => a.dayIndex - b.dayIndex);
 
   // update filled values
   filledEnteries.forEach((entry) => {
@@ -203,4 +225,20 @@ const populateData = (initialData, year) => {
   });
 
   return finalArr;
+};
+
+const getBoxColor = (done, maxValueOfDone, selectedTheme) => {
+  const { quotient } = getQuotientAndReminder(maxValueOfDone, 5);
+
+  if (done < quotient) {
+    return selectedTheme.level0;
+  } else if (done >= quotient && done < 2 * quotient) {
+    return selectedTheme.level1;
+  } else if (done >= 2 * quotient && done < 3 * quotient) {
+    return selectedTheme.level2;
+  } else if (done >= 3 * quotient && done < 4 * quotient) {
+    return selectedTheme.level3;
+  } else if (done > 4 * quotient) {
+    return selectedTheme.level4;
+  }
 };
