@@ -47,8 +47,8 @@ const drawContributionGraphForYear = (data, year, config) => {
 
   const boxWidth = 10;
   const boxHeight = 10;
-  const boxGapX = 4;
-  const boxGapY = 4;
+  const boxGapX = 3;
+  const boxGapY = 3;
   const maxBoxesInColumn = 7;
 
   let offsetX = 0;
@@ -89,20 +89,17 @@ const drawContributionGraphForYear = (data, year, config) => {
 
   // draw boxes
   const populatedData = populateData(data, year, graphTheme);
-
   const dayOfFirstDayOfYear = getDay(new Date(year, 0, 1));
-
   let totalColumns = Math.ceil(populatedData.length / maxBoxesInColumn);
-
   if (dayOfFirstDayOfYear > 0) {
     totalColumns += 1;
   }
 
   let boxOffsetX = offsetX + boxGapX;
-  let boxOffsetY = offsetY + boxGapY;
 
-  // paint raw graph
   for (let x = 0; x < totalColumns; x++) {
+    let boxOffsetY = offsetY + boxGapY;
+
     for (let y = dayOfFirstDayOfYear; y < maxBoxesInColumn; y++) {
       drawContributionBox({
         draw,
@@ -112,24 +109,10 @@ const drawContributionGraphForYear = (data, year, config) => {
         done: populatedData[y + x * maxBoxesInColumn].done,
         date: populatedData[y + x * maxBoxesInColumn].date,
       });
-      boxOffsetY = y * (boxHeight + boxGapY) + boxGapY;
+      boxOffsetY += boxHeight + boxGapY;
     }
-    boxOffsetX = x * (boxWidth + boxGapX) + boxGapX;
+    boxOffsetX += boxWidth + boxGapX;
   }
-
-  //   for (let x = 0; x < data.length; x++) {
-  //     for (let y = 0; y < maxBoxesInColumn; y++) {
-  //       const boxPositionX = x * (boxGap + boxWidth);
-  //       const boxPositionY = y * (boxGap + boxHeight);
-
-  //       drawContributionBox({
-  //         draw,
-  //         boxPositionX,
-  //         boxPositionY,
-  //         // boxColor: data[y + x * maxBoxesInColumn].color,
-  //       });
-  //     }
-  //   }
 };
 
 const drawDays = () => {};
