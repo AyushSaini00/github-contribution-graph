@@ -1,15 +1,28 @@
 {
   "name": "github-contribution-graph",
   "version": "1.0.0",
-  "description": "",
+  "description": "display your data visually with a github like contribution graph",
+  "private": "false",
+  "homepage": "https://github.com/AyushSaini00/github-contribution-graph#readme",
   "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AyushSaini00/github-contribution-graph.git"
+  },
   "type": "module",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "github",
+    "contribution",
+    "chart"
+  ],
+  "author": "Ayush Saini",
+  "bugs": {
+    "url": "https://github.com/AyushSaini00/github-contribution-graph/issues"
+  },
+  "license": "MIT",
   "dependencies": {
     "@svgdotjs/svg.js": "^3.1.2",
     "date-fns": "^2.29.3"
