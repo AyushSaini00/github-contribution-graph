@@ -2,6 +2,8 @@
 
 display your data visually with a github like contribution graph.
 
+![example of github contribution graph in action](https://raw.githubusercontent.com/AyushSaini00/github-contribution-graph/main/public/github-contribution-graph.png)
+
 ## install
 
 ```

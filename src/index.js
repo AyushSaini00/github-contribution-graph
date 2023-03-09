@@ -236,7 +236,7 @@ const populateData = (initialData, year, graphTheme) => {
         not_done: 0,
         dayIndex,
         date,
-        color: selectedTheme.level0,
+        color: selectedTheme[`level0`],
       });
     }
   });
