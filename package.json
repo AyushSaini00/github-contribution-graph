@@ -24,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "@svgdotjs/svg.js": "^3.1.2",
-    "date-fns": "^2.29.3"
+    "date-fns": "^2.29.3",
+    "svgdom": "^0.1.13"
   }
 }

@@ -1,4 +1,6 @@
-import { SVG } from "@svgdotjs/svg.js";
+"use strict";
+
+import { SVG, registerWindow } from "@svgdotjs/svg.js";
 import {
   format,
   getDate,
@@ -7,38 +9,58 @@ import {
   getMonth,
   parseISO,
 } from "date-fns";
-import { MONTHS, DAYS } from "./constants";
-import { THEMES } from "./themes";
+import { MONTHS, DAYS } from "./constants.js";
+import { THEMES } from "./themes.js";
+import { createSVGWindow } from "svgdom";
 
-export const drawContributionGraph = ({
+export default function drawContributionGraph({
   data,
+  ssr = false,
   config: {
     graphTheme = "standard",
     graphMountElement = "body",
     graphWidth = 723,
     graphHeight = 113,
   } = {},
-}) => {
-  // sort year high to low
+}) {
   const years = Object.keys(data).sort((a, b) => b - a);
   if (!years.length) return;
 
-  years.forEach((year, ind) => {
-    drawContributionGraphForYear(data[year], year, {
+  let finalSvg;
+
+  years.forEach((year) => {
+    const svg = drawContributionGraphForYear(data[year], ssr, year, {
       graphTheme,
       graphMountElement,
       graphWidth,
       graphHeight,
     });
+    if (ssr) finalSvg = svg;
   });
 
-  drawTooltip();
-};
+  if (ssr) {
+    return finalSvg;
+  } else {
+    drawTooltip();
+  }
+}
 
-const drawContributionGraphForYear = (data, year, config) => {
+const drawContributionGraphForYear = (data, ssr, year, config) => {
   const { graphMountElement, graphWidth, graphHeight, graphTheme } = config;
 
-  const draw = SVG().addTo(graphMountElement).size(graphWidth, graphHeight);
+  let draw;
+
+  if (ssr) {
+    const window = createSVGWindow();
+    const document = window.document;
+
+    // register window and document
+    registerWindow(window, document);
+
+    draw = SVG(document.documentElement).size(graphWidth, graphHeight);
+  } else {
+    draw = SVG().addTo(graphMountElement).size(graphWidth, graphHeight);
+  }
 
   const dayTextMaxWidth = 28;
   const dayFont = { family: "Helvetica", size: 10 };
@@ -119,6 +141,12 @@ const drawContributionGraphForYear = (data, year, config) => {
       boxOffsetY += boxHeight + boxGapY;
     }
     boxOffsetX += boxWidth + boxGapX;
+  }
+
+  // console.log({ svg: draw.svg() });
+
+  if (ssr) {
+    return draw.svg().toString();
   }
 };
 
