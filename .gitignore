@@ -1,3 +1,4 @@
 /node_modules
 /demo
 /demo-ssr
+.DS_Store

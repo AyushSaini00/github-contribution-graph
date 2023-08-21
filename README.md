@@ -23,6 +23,11 @@ drawContributionGraph({
 });
 ```
 
+## demo
+
+- [csr demo](https://stackblitz.com/edit/csr-github-contribution-graph-demo?file=index.js)
+- [ssr demo]()
+
 ## api
 
 - `drawContributionGraph(data, config)`

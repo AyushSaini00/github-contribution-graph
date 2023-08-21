@@ -1,17 +1,13 @@
 "use strict";
 
-import { SVG, registerWindow } from "@svgdotjs/svg.js";
-import {
-  format,
-  getDate,
-  getDay,
-  getDaysInMonth,
-  getMonth,
-  parseISO,
-} from "date-fns";
-import { MONTHS, DAYS } from "./constants.js";
-import { THEMES } from "./themes.js";
 import { createSVGWindow } from "svgdom";
+import { SVG, registerWindow } from "@svgdotjs/svg.js";
+import { format, getDay, getDaysInMonth, parseISO } from "date-fns";
+import { MONTHS, DAYS } from "./utils/constants.js";
+import { THEMES } from "./utils/themes.js";
+import getIndexOfDayInYear from "./utils/getIndexOfDayInYear.js";
+import getBoxColor from "./utils/getBoxColor.js";
+import getQuotientAndReminder from "./utils/getQuotientAndReminder.js";
 
 export default function drawContributionGraph({
   data,
@@ -191,60 +187,6 @@ const drawContributionBox = ({
   });
 };
 
-const drawTooltip = () => {
-  const tooltipElement = document.createElement("div");
-  tooltipElement.classList.add("github-contribution-graph-tooltip");
-  tooltipElement.style.visibility = "hidden";
-  document.body.appendChild(tooltipElement);
-};
-
-const showTooltip = (tooltipText, x, y) => {
-  const tooltipElement = document.querySelector(
-    ".github-contribution-graph-tooltip"
-  );
-  tooltipElement.style.visibility = "visible";
-  tooltipElement.textContent = tooltipText;
-  const offsetHeightElem = tooltipElement.offsetHeight;
-  const offsetWidthElem = tooltipElement.offsetWidth;
-
-  //   const leftVal = x - offsetWidthElem / 2 > 0 ? x - offsetWidthElem / 2 : 0;
-  //   const topVal =
-  //     y - offsetHeightElem > 0 ? y - offsetHeightElem : y + offsetHeightElem;
-  const leftVal = x - offsetWidthElem / 2 + 5;
-  const topVal = y - offsetHeightElem - 5;
-
-  tooltipElement.style.left = `${leftVal}px`;
-  tooltipElement.style.top = `${topVal}px`;
-};
-
-const hideTooltip = () => {
-  const tooltipElement = document.querySelector(
-    ".github-contribution-graph-tooltip"
-  );
-  tooltipElement.style.visibility = "hidden";
-};
-
-const getQuotientAndReminder = (dividend, divisor) => {
-  const rawQuotient = dividend / divisor;
-  const reminder = rawQuotient % 1;
-  const quotient = rawQuotient - reminder;
-
-  return { quotient, reminder };
-};
-
-const getIndexOfDayInYear = (date, year) => {
-  const monthIndex = getMonth(date);
-  const day = getDate(date);
-
-  let dayIndex = day;
-  for (let i = 0; i < monthIndex; i++) {
-    const numberOfDaysInMonth = getDaysInMonth(new Date(year, i));
-    dayIndex += numberOfDaysInMonth;
-  }
-
-  return dayIndex;
-};
-
 const populateData = (initialData, year, graphTheme) => {
   const selectedTheme = THEMES[graphTheme];
   //   const numberOfDaysInYear = getDaysInYear(new Date(year, 0, 1));
@@ -286,18 +228,37 @@ const populateData = (initialData, year, graphTheme) => {
   return finalArr;
 };
 
-const getBoxColor = (done, maxValueOfDone, selectedTheme) => {
-  const { quotient } = getQuotientAndReminder(maxValueOfDone, 5);
+// TOOLTIP
 
-  if (done < quotient) {
-    return selectedTheme.level0;
-  } else if (done >= quotient && done < 2 * quotient) {
-    return selectedTheme.level1;
-  } else if (done >= 2 * quotient && done < 3 * quotient) {
-    return selectedTheme.level2;
-  } else if (done >= 3 * quotient && done < 4 * quotient) {
-    return selectedTheme.level3;
-  } else if (done > 4 * quotient) {
-    return selectedTheme.level4;
-  }
+const drawTooltip = () => {
+  const tooltipElement = document.createElement("div");
+  tooltipElement.classList.add("github-contribution-graph-tooltip");
+  tooltipElement.style.visibility = "hidden";
+  document.body.appendChild(tooltipElement);
+};
+
+const showTooltip = (tooltipText, x, y) => {
+  const tooltipElement = document.querySelector(
+    ".github-contribution-graph-tooltip"
+  );
+  tooltipElement.style.visibility = "visible";
+  tooltipElement.textContent = tooltipText;
+  const offsetHeightElem = tooltipElement.offsetHeight;
+  const offsetWidthElem = tooltipElement.offsetWidth;
+
+  //   const leftVal = x - offsetWidthElem / 2 > 0 ? x - offsetWidthElem / 2 : 0;
+  //   const topVal =
+  //     y - offsetHeightElem > 0 ? y - offsetHeightElem : y + offsetHeightElem;
+  const leftVal = x - offsetWidthElem / 2 + 5;
+  const topVal = y - offsetHeightElem - 5;
+
+  tooltipElement.style.left = `${leftVal}px`;
+  tooltipElement.style.top = `${topVal}px`;
+};
+
+const hideTooltip = () => {
+  const tooltipElement = document.querySelector(
+    ".github-contribution-graph-tooltip"
+  );
+  tooltipElement.style.visibility = "hidden";
 };
