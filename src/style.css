@@ -1,0 +1,13 @@
+.github-contribution-graph-tooltip {
+  background: black;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  position: absolute;
+  font-size: 12px;
+  line-height: 16px;
+}
+rect {
+  cursor: pointer;
+  position: absolute;
+}
