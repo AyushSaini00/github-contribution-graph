@@ -6,14 +6,25 @@ display your data visually with a github like contribution graph.
 
 ## install
 
-```
+```bash
 npm i github-contribution-graph
+```
+
+or
+
+```bash
+yarn add github-contribution-graph
 ```
 
 ## usage
 
 ```js
-import { drawContributionGraph } from "github-contribution-graph";
+import drawContributionGraph from "github-contribution-graph";
+
+// for toottip css
+// <link rel="stylesheet" href="https://unpkg.com/github-contribution-graph/src/style.css" crossorigin="anonymous">
+// or
+// import "github-contribution-graph/src/style.css";
 
 drawContributionGraph({
   data,
@@ -26,7 +37,7 @@ drawContributionGraph({
 ## demo
 
 - [csr demo](https://stackblitz.com/edit/csr-github-contribution-graph-demo?file=index.js)
-- [ssr demo]()
+<!-- - [ssr demo]() -->
 
 ## api
 
