@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>github contribution graph</title>
+</head>
+
+<body>
+    <div>github contribution graph client side rendering demo:</div>
+    <div>refresh to randomize :)</div>
+    <br>
+    <br>
+    <div id="app"></div>
+    <br>
+    <br>
+    <div>check out the <a href="https://www.npmjs.com/package/github-contribution-graph">library</a></div>
+
+    <script type="module">
+        // import drawContributionGraph from "./dist/github-contribution-graph.es.js"; // for prod build
+        import drawContributionGraph from "./src/index.js"; // for dev
+        const randomData = {
+            generator({ years = [] }) {
+                const data = {};
+                if (!years.length) return data;
+
+                years.forEach(year => {
+                    for (let month = 1; month <= 12; month++) {
+                        for (let day = 1; day <= this.getDaysInMonth(month, year); day++) {
+                            const date = `${year}-${this.padZero(month)}-${this.padZero(day)}`;
+                            const done = Math.floor(Math.random() * 10) + 1;
+                            const not_done = Math.floor(Math.random() * 10);
+
+                            if (!data[year]) {
+                                data[year] = [];
+                            }
+                            data[year].push({ done, not_done, date });
+                        }
+                    }
+                })
+
+
+                return data;
+            },
+            getDaysInMonth(month, year) {
+                return new Date(year, month, 0).getDate();
+            },
+            padZero(number) {
+                return number.toString().padStart(2, '0');
+            }
+        }
+
+        const data = randomData.generator({ years: [2023, 2022] });
+
+        drawContributionGraph({
+            data,
+            config: {
+                // graphTheme: "figma",
+                graphMountElement: "#app",
+            },
+        });
+    </script>
+</body>
+
+</html>

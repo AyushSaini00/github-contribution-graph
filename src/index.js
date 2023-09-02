@@ -1,7 +1,5 @@
 "use strict";
 
-import { createSVGWindow } from "svgdom";
-import { SVG, registerWindow } from "@svgdotjs/svg.js";
 import { format, getDay, getDaysInMonth, parseISO } from "date-fns";
 import { MONTHS, DAYS } from "./utils/constants.js";
 import { THEMES } from "./utils/themes.js";
@@ -9,6 +7,18 @@ import getIndexOfDayInYear from "./utils/getIndexOfDayInYear.js";
 import getBoxColor from "./utils/getBoxColor.js";
 import getQuotientAndReminder from "./utils/getQuotientAndReminder.js";
 
+/**
+ * Draws a contribution graph using provided data.
+ *
+ * @param {Object} options - Options for drawing the contribution graph.
+ * @param {Object[]} options.data - An array of data points for the contribution graph.
+ * @param {boolean} [options.ssr=false] - Flag indicating if the graph should be rendered on the server side.
+ * @param {Object} [options.config] - Configuration settings for the graph.
+ * @param {string} [options.config.graphTheme="standard"] - Theme to be applied to the graph.
+ * @param {string} [options.config.graphMountElement="body"] - The DOM element where the graph will be mounted.
+ * @param {number} [options.config.graphWidth=723] - Width of the contribution graph.
+ * @param {number} [options.config.graphHeight=113] - Height of the contribution graph.
+ */
 export default function drawContributionGraph({
   data,
   ssr = false,
@@ -22,47 +32,38 @@ export default function drawContributionGraph({
   const years = Object.keys(data).sort((a, b) => b - a);
   if (!years.length) return;
 
-  let finalSvg;
+  let allSvgs = "";
 
   years.forEach((year) => {
-    const svg = drawContributionGraphForYear(data[year], ssr, year, {
+    const svg = drawContributionGraphForYear(data[year], year, {
       graphTheme,
       graphMountElement,
       graphWidth,
       graphHeight,
     });
-    if (ssr) finalSvg = svg;
+    allSvgs += svg;
   });
 
-  if (ssr) {
-    return finalSvg;
-  } else {
+  if (!ssr) {
+    const mountElem = document.querySelector(graphMountElement);
+    const tempContainer = document.createElement("div");
+    tempContainer.innerHTML = allSvgs;
+    while (tempContainer.firstChild) {
+      mountElem.appendChild(tempContainer.firstChild);
+    }
     drawTooltip();
+  } else {
+    return allSvgs;
   }
 }
 
-const drawContributionGraphForYear = (data, ssr, year, config) => {
-  const { graphMountElement, graphWidth, graphHeight, graphTheme } = config;
+const drawContributionGraphForYear = (data, year, config) => {
+  const { graphWidth, graphHeight, graphTheme } = config;
 
-  let draw;
-
-  if (ssr) {
-    const window = createSVGWindow();
-    const document = window.document;
-
-    // register window and document
-    registerWindow(window, document);
-
-    draw = SVG(document.documentElement).size(graphWidth, graphHeight);
-  } else {
-    draw = SVG().addTo(graphMountElement).size(graphWidth, graphHeight);
-  }
+  let graphSvgString = "";
 
   const dayTextMaxWidth = 28;
-  const dayFont = { family: "Helvetica", size: 10 };
-
   const monthTextMaxHeight = 14;
-  const monthFont = { family: "Helvetica", size: 10 };
 
   const boxWidth = 10;
   const boxHeight = 10;
@@ -81,8 +82,11 @@ const drawContributionGraphForYear = (data, ssr, year, config) => {
     daysOffsetY =
       (2 * y + 1) * boxHeight + 2 * (y + 1) * boxGapY + monthTextMaxHeight;
 
-    const text = draw.text(DAYS[y]);
-    text.font(dayFont).move(daysOffsetX, daysOffsetY);
+    graphSvgString += createTextNode({
+      label: DAYS[y],
+      xPos: daysOffsetX,
+      yPos: daysOffsetY + 9, //TODO: figure out why this 9 is needed, lol cry
+    });
   }
 
   offsetX += dayTextMaxWidth;
@@ -98,8 +102,11 @@ const drawContributionGraphForYear = (data, ssr, year, config) => {
       maxBoxesInColumn
     );
 
-    const text = draw.text(MONTHS[x]);
-    text.font(monthFont).move(monthsOffsetX, monthsOffsetY);
+    graphSvgString += createTextNode({
+      label: MONTHS[x],
+      xPos: monthsOffsetX,
+      yPos: monthsOffsetY + 9,
+    });
 
     monthsOffsetX = monthsOffsetX + quotient * (boxWidth + boxGapX) + boxGapX;
   }
@@ -127,64 +134,35 @@ const drawContributionGraphForYear = (data, ssr, year, config) => {
     let loopCondition = maxBoxesInColumn;
 
     for (let y = loopInitializer; y < loopCondition; y++) {
-      drawContributionBox({
-        draw,
-        boxPositionX: boxOffsetX,
-        boxPositionY: boxOffsetY,
-        boxData: populatedData[currBoxIndex],
-      });
+      const boxData = populatedData[currBoxIndex];
+
+      if (boxData) {
+        const { done, date, color } = boxData;
+        const tooltipText = done
+          ? `${done} contributions on ${format(parseISO(date), "PPPP")}`
+          : `no contributions on ${format(parseISO(date), "PPPP")}`;
+
+        graphSvgString += createRectNode({
+          xPos: boxOffsetX,
+          yPos: boxOffsetY,
+          fill: color,
+          tooltipText,
+          date: date,
+        });
+      }
       currBoxIndex++;
       boxOffsetY += boxHeight + boxGapY;
     }
     boxOffsetX += boxWidth + boxGapX;
   }
 
-  // console.log({ svg: draw.svg() });
-
-  if (ssr) {
-    return draw.svg().toString();
-  }
-};
-
-const drawContributionBox = ({
-  draw,
-  boxPositionX,
-  boxPositionY,
-  boxWidth = 10,
-  boxHeight = 10,
-  boxBorderColor = "#1b1f230f",
-  boxBorderWidth = 1,
-  boxBorderRadius = 2,
-  boxData,
-}) => {
-  if (!boxData) return;
-  const { color, done, date } = boxData;
-
-  const tooltipText = done
-    ? `${done} contributions on ${format(parseISO(date), "PPPP")}`
-    : `no contributions on ${format(parseISO(date), "PPPP")}`;
-
-  const boxElement = draw
-    .rect(boxWidth, boxHeight)
-    .move(boxPositionX, boxPositionY)
-    .attr({
-      fill: color,
-      stroke: boxBorderColor,
-      "stroke-width": boxBorderWidth,
-      rx: boxBorderRadius,
-    })
-    .data({
-      "tooltip-text": tooltipText,
-      date: date,
-    });
-
-  boxElement.addClass(`github-contribution-graph-box-${date}`);
-  boxElement.mouseover((e) => {
-    showTooltip(tooltipText, boxPositionX, boxPositionY);
+  const svgString = createYearGraphNode({
+    width: graphWidth,
+    height: graphHeight,
+    children: graphSvgString,
   });
-  boxElement.mouseout((e) => {
-    hideTooltip();
-  });
+
+  return svgString;
 };
 
 const populateData = (initialData, year, graphTheme) => {
@@ -228,6 +206,60 @@ const populateData = (initialData, year, graphTheme) => {
   return finalArr;
 };
 
+// svg nodes
+const createTextNode = ({
+  fontFamily = "Helvetica",
+  fontSize = 10,
+  label,
+  xPos,
+  yPos,
+}) => {
+  return `
+    <text font-family="${fontFamily}" font-size="${fontSize}" x="${xPos}" y="${yPos}">
+      <tspan dy="0" x="${xPos}">${label}</tspan>
+    </text>
+  `;
+};
+
+const createRectNode = ({
+  width = 10,
+  height = 10,
+  xPos,
+  yPos,
+  fill,
+  stroke = "#1b1f230f",
+  strokeWidth = 1,
+  borderRadius = 2,
+  tooltipText,
+  date,
+  classNames,
+}) => {
+  return `
+  <rect
+    width="${width}"
+    height="${height}" 
+    x="${xPos}" y="${yPos}" 
+    fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" rx="${borderRadius}" 
+    ${tooltipText ? `data-tooltip-text="${tooltipText}"` : ""}
+    ${date ? `data-date="${date}"` : ""} 
+    class="${`github-contribution-graph-box-${date} ${
+      classNames ? classNames : ""
+    }`}"></rect>
+  `;
+};
+
+const createYearGraphNode = ({ width, height, children }) => {
+  return `
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    version="1.1"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 ${width} ${height}"
+    width="${width}" height="${height}"
+    >${children}</svg>
+  `;
+};
+
 // TOOLTIP
 
 const drawTooltip = () => {
@@ -262,3 +294,44 @@ const hideTooltip = () => {
   );
   tooltipElement.style.visibility = "hidden";
 };
+
+// const drawContributionBox = ({
+//   draw,
+//   boxPositionX,
+//   boxPositionY,
+//   boxWidth = 10,
+//   boxHeight = 10,
+//   boxBorderColor = "#1b1f230f",
+//   boxBorderWidth = 1,
+//   boxBorderRadius = 2,
+//   boxData,
+// }) => {
+//   if (!boxData) return;
+//   const { color, done, date } = boxData;
+
+//   const tooltipText = done
+//     ? `${done} contributions on ${format(parseISO(date), "PPPP")}`
+//     : `no contributions on ${format(parseISO(date), "PPPP")}`;
+
+//   const boxElement = draw
+//     .rect(boxWidth, boxHeight)
+//     .move(boxPositionX, boxPositionY)
+//     .attr({
+//       fill: color,
+//       stroke: boxBorderColor,
+//       "stroke-width": boxBorderWidth,
+//       rx: boxBorderRadius,
+//     })
+//     .data({
+//       "tooltip-text": tooltipText,
+//       date: date,
+//     });
+
+//   boxElement.addClass(`github-contribution-graph-box-${date}`);
+//   boxElement.mouseover((e) => {
+//     showTooltip(tooltipText, boxPositionX, boxPositionY);
+//   });
+//   boxElement.mouseout((e) => {
+//     hideTooltip();
+//   });
+// };

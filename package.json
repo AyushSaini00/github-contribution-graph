@@ -3,15 +3,32 @@
   "version": "1.0.3",
   "description": "display your data visually with a github like contribution graph",
   "homepage": "https://github.com/AyushSaini00/github-contribution-graph#readme",
-  "main": "./src/index.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/github-contribution-graph.umd.js",
+  "module": "./dist/github-contribution-graph.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/github-contribution-graph.es.js",
+      "require": "./dist/github-contribution-graph.umd.js"
+    }
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "date-fns": "^2.29.3"
+  },
+  "devDependencies": {
+    "vite": "^4.4.9"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AyushSaini00/github-contribution-graph.git"
   },
-  "type": "module",
   "keywords": [
     "github",
     "contribution",
@@ -21,10 +38,5 @@
   "bugs": {
     "url": "https://github.com/AyushSaini00/github-contribution-graph/issues"
   },
-  "license": "MIT",
-  "dependencies": {
-    "@svgdotjs/svg.js": "^3.1.2",
-    "date-fns": "^2.29.3",
-    "svgdom": "^0.1.13"
-  }
+  "license": "MIT"
 }
