@@ -8,18 +8,18 @@ function h(r, t) {
   if (t.length < r)
     throw new TypeError(r + " argument" + (r > 1 ? "s" : "") + " required, but only " + t.length + " present");
 }
-function Q(r) {
+function A(r) {
   "@babel/helpers - typeof";
-  return typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? Q = function(e) {
+  return typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? A = function(e) {
     return typeof e;
-  } : Q = function(e) {
+  } : A = function(e) {
     return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
-  }, Q(r);
+  }, A(r);
 }
 function b(r) {
   h(1, arguments);
   var t = Object.prototype.toString.call(r);
-  return r instanceof Date || Q(r) === "object" && t === "[object Date]" ? new Date(r.getTime()) : typeof r == "number" || t === "[object Number]" ? new Date(r) : ((typeof r == "string" || t === "[object String]") && typeof console < "u" && (console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#string-arguments"), console.warn(new Error().stack)), /* @__PURE__ */ new Date(NaN));
+  return r instanceof Date || A(r) === "object" && t === "[object Date]" ? new Date(r.getTime()) : typeof r == "number" || t === "[object Number]" ? new Date(r) : ((typeof r == "string" || t === "[object String]") && typeof console < "u" && (console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#string-arguments"), console.warn(new Error().stack)), /* @__PURE__ */ new Date(NaN));
 }
 function ye(r, t) {
   h(2, arguments);
@@ -35,16 +35,16 @@ function pe(r) {
   return t.setUTCFullYear(r.getFullYear()), r.getTime() - t.getTime();
 }
 var le = 6e4, de = 36e5;
-function G(r) {
+function B(r) {
   "@babel/helpers - typeof";
-  return typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? G = function(e) {
+  return typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? B = function(e) {
     return typeof e;
-  } : G = function(e) {
+  } : B = function(e) {
     return e && typeof Symbol == "function" && e.constructor === Symbol && e !== Symbol.prototype ? "symbol" : typeof e;
-  }, G(r);
+  }, B(r);
 }
 function Te(r) {
-  return h(1, arguments), r instanceof Date || G(r) === "object" && Object.prototype.toString.call(r) === "[object Date]";
+  return h(1, arguments), r instanceof Date || B(r) === "object" && Object.prototype.toString.call(r) === "[object Date]";
 }
 function De(r) {
   if (h(1, arguments), !Te(r) && typeof r != "number")
@@ -65,7 +65,7 @@ function Oe(r) {
   var a = t.getTime(), n = e - a;
   return Math.floor(n / xe) + 1;
 }
-function A(r) {
+function Q(r) {
   h(1, arguments);
   var t = 1, e = b(r), a = e.getUTCDay(), n = (a < t ? 7 : 0) + a - t;
   return e.setUTCDate(e.getUTCDate() - n), e.setUTCHours(0, 0, 0, 0), e;
@@ -74,25 +74,25 @@ function ce(r) {
   h(1, arguments);
   var t = b(r), e = t.getUTCFullYear(), a = /* @__PURE__ */ new Date(0);
   a.setUTCFullYear(e + 1, 0, 4), a.setUTCHours(0, 0, 0, 0);
-  var n = A(a), i = /* @__PURE__ */ new Date(0);
+  var n = Q(a), i = /* @__PURE__ */ new Date(0);
   i.setUTCFullYear(e, 0, 4), i.setUTCHours(0, 0, 0, 0);
-  var o = A(i);
+  var o = Q(i);
   return t.getTime() >= n.getTime() ? e + 1 : t.getTime() >= o.getTime() ? e : e - 1;
 }
 function Me(r) {
   h(1, arguments);
   var t = ce(r), e = /* @__PURE__ */ new Date(0);
   e.setUTCFullYear(t, 0, 4), e.setUTCHours(0, 0, 0, 0);
-  var a = A(e);
+  var a = Q(e);
   return a;
 }
 var Pe = 6048e5;
 function Se(r) {
   h(1, arguments);
-  var t = b(r), e = A(t).getTime() - Me(t).getTime();
+  var t = b(r), e = Q(t).getTime() - Me(t).getTime();
   return Math.round(e / Pe) + 1;
 }
-function B(r, t) {
+function G(r, t) {
   var e, a, n, i, o, l, u, s;
   h(1, arguments);
   var d = V(), c = S((e = (a = (n = (i = t == null ? void 0 : t.weekStartsOn) !== null && i !== void 0 ? i : t == null || (o = t.locale) === null || o === void 0 || (l = o.options) === null || l === void 0 ? void 0 : l.weekStartsOn) !== null && n !== void 0 ? n : d.weekStartsOn) !== null && a !== void 0 ? a : (u = d.locale) === null || u === void 0 || (s = u.options) === null || s === void 0 ? void 0 : s.weekStartsOn) !== null && e !== void 0 ? e : 0);
@@ -109,9 +109,9 @@ function fe(r, t) {
     throw new RangeError("firstWeekContainsDate must be between 1 and 7 inclusively");
   var w = /* @__PURE__ */ new Date(0);
   w.setUTCFullYear(c + 1, 0, g), w.setUTCHours(0, 0, 0, 0);
-  var T = B(w, t), D = /* @__PURE__ */ new Date(0);
+  var T = G(w, t), D = /* @__PURE__ */ new Date(0);
   D.setUTCFullYear(c, 0, g), D.setUTCHours(0, 0, 0, 0);
-  var C = B(D, t);
+  var C = G(D, t);
   return d.getTime() >= T.getTime() ? c + 1 : d.getTime() >= C.getTime() ? c : c - 1;
 }
 function ke(r, t) {
@@ -119,13 +119,13 @@ function ke(r, t) {
   h(1, arguments);
   var d = V(), c = S((e = (a = (n = (i = t == null ? void 0 : t.firstWeekContainsDate) !== null && i !== void 0 ? i : t == null || (o = t.locale) === null || o === void 0 || (l = o.options) === null || l === void 0 ? void 0 : l.firstWeekContainsDate) !== null && n !== void 0 ? n : d.firstWeekContainsDate) !== null && a !== void 0 ? a : (u = d.locale) === null || u === void 0 || (s = u.options) === null || s === void 0 ? void 0 : s.firstWeekContainsDate) !== null && e !== void 0 ? e : 1), m = fe(r, t), g = /* @__PURE__ */ new Date(0);
   g.setUTCFullYear(m, 0, c), g.setUTCHours(0, 0, 0, 0);
-  var w = B(g, t);
+  var w = G(g, t);
   return w;
 }
 var We = 6048e5;
 function Ye(r, t) {
   h(1, arguments);
-  var e = b(r), a = B(e, t).getTime() - ke(e, t).getTime();
+  var e = b(r), a = G(e, t).getTime() - ke(e, t).getTime();
   return Math.round(a / We) + 1;
 }
 function f(r, t) {
@@ -791,7 +791,7 @@ var ne = function(t, e) {
         width: "full"
       });
   }
-}, _e = function(t, e) {
+}, Ee = function(t, e) {
   var a = t.match(/(P+)(p+)?/) || [], n = a[1], i = a[2];
   if (!i)
     return ne(t, e);
@@ -820,11 +820,11 @@ var ne = function(t, e) {
       break;
   }
   return o.replace("{{date}}", ne(n, e)).replace("{{time}}", me(i, e));
-}, Ee = {
+}, _e = {
   p: me,
-  P: _e
+  P: Ee
 };
-const Fe = Ee;
+const Fe = _e;
 var Ie = ["D", "DD"], qe = ["YY", "YYYY"];
 function He(r) {
   return Ie.indexOf(r) !== -1;
@@ -908,39 +908,39 @@ var Re = {
   var n, i = Re[t];
   return typeof i == "string" ? n = i : e === 1 ? n = i.one : n = i.other.replace("{{count}}", e.toString()), a != null && a.addSuffix ? a.comparison && a.comparison > 0 ? "in " + n : n + " ago" : n;
 };
-const Qe = Xe;
+const Ae = Xe;
 function J(r) {
   return function() {
     var t = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, e = t.width ? String(t.width) : r.defaultWidth, a = r.formats[e] || r.formats[r.defaultWidth];
     return a;
   };
 }
-var Ge = {
+var Be = {
   full: "EEEE, MMMM do, y",
   long: "MMMM do, y",
   medium: "MMM d, y",
   short: "MM/dd/yyyy"
-}, Ae = {
+}, Qe = {
   full: "h:mm:ss a zzzz",
   long: "h:mm:ss a z",
   medium: "h:mm:ss a",
   short: "h:mm a"
-}, Be = {
+}, Ge = {
   full: "{{date}} 'at' {{time}}",
   long: "{{date}} 'at' {{time}}",
   medium: "{{date}}, {{time}}",
   short: "{{date}}, {{time}}"
 }, je = {
   date: J({
-    formats: Ge,
+    formats: Be,
     defaultWidth: "full"
   }),
   time: J({
-    formats: Ae,
+    formats: Qe,
     defaultWidth: "full"
   }),
   dateTime: J({
-    formats: Be,
+    formats: Ge,
     defaultWidth: "full"
   })
 };
@@ -1221,7 +1221,7 @@ var ct = /^(\d+)(th|st|nd|rd)?/i, ft = /\d+/i, mt = {
 const xt = Ct;
 var Ot = {
   code: "en-US",
-  formatDistance: Qe,
+  formatDistance: Ae,
   formatLong: Ve,
   formatRelative: Ze,
   localize: ut,
@@ -1234,12 +1234,12 @@ var Ot = {
 const Mt = Ot;
 var Pt = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g, St = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g, kt = /^'([^]*?)'?$/, Wt = /''/g, Yt = /[a-zA-Z]/;
 function K(r, t, e) {
-  var a, n, i, o, l, u, s, d, c, m, g, w, T, D, C, k, _, Y;
+  var a, n, i, o, l, u, s, d, c, m, g, w, T, D, C, k, E, Y;
   h(2, arguments);
-  var E = String(t), x = V(), O = (a = (n = e == null ? void 0 : e.locale) !== null && n !== void 0 ? n : x.locale) !== null && a !== void 0 ? a : Mt, U = S((i = (o = (l = (u = e == null ? void 0 : e.firstWeekContainsDate) !== null && u !== void 0 ? u : e == null || (s = e.locale) === null || s === void 0 || (d = s.options) === null || d === void 0 ? void 0 : d.firstWeekContainsDate) !== null && l !== void 0 ? l : x.firstWeekContainsDate) !== null && o !== void 0 ? o : (c = x.locale) === null || c === void 0 || (m = c.options) === null || m === void 0 ? void 0 : m.firstWeekContainsDate) !== null && i !== void 0 ? i : 1);
+  var _ = String(t), x = V(), O = (a = (n = e == null ? void 0 : e.locale) !== null && n !== void 0 ? n : x.locale) !== null && a !== void 0 ? a : Mt, U = S((i = (o = (l = (u = e == null ? void 0 : e.firstWeekContainsDate) !== null && u !== void 0 ? u : e == null || (s = e.locale) === null || s === void 0 || (d = s.options) === null || d === void 0 ? void 0 : d.firstWeekContainsDate) !== null && l !== void 0 ? l : x.firstWeekContainsDate) !== null && o !== void 0 ? o : (c = x.locale) === null || c === void 0 || (m = c.options) === null || m === void 0 ? void 0 : m.firstWeekContainsDate) !== null && i !== void 0 ? i : 1);
   if (!(U >= 1 && U <= 7))
     throw new RangeError("firstWeekContainsDate must be between 1 and 7 inclusively");
-  var L = S((g = (w = (T = (D = e == null ? void 0 : e.weekStartsOn) !== null && D !== void 0 ? D : e == null || (C = e.locale) === null || C === void 0 || (k = C.options) === null || k === void 0 ? void 0 : k.weekStartsOn) !== null && T !== void 0 ? T : x.weekStartsOn) !== null && w !== void 0 ? w : (_ = x.locale) === null || _ === void 0 || (Y = _.options) === null || Y === void 0 ? void 0 : Y.weekStartsOn) !== null && g !== void 0 ? g : 0);
+  var L = S((g = (w = (T = (D = e == null ? void 0 : e.weekStartsOn) !== null && D !== void 0 ? D : e == null || (C = e.locale) === null || C === void 0 || (k = C.options) === null || k === void 0 ? void 0 : k.weekStartsOn) !== null && T !== void 0 ? T : x.weekStartsOn) !== null && w !== void 0 ? w : (E = x.locale) === null || E === void 0 || (Y = E.options) === null || Y === void 0 ? void 0 : Y.weekStartsOn) !== null && g !== void 0 ? g : 0);
   if (!(L >= 0 && L <= 6))
     throw new RangeError("weekStartsOn must be between 0 and 6 inclusively");
   if (!O.localize)
@@ -1254,7 +1254,7 @@ function K(r, t, e) {
     weekStartsOn: L,
     locale: O,
     _originalDate: v
-  }, R = E.match(St).map(function(y) {
+  }, R = _.match(St).map(function(y) {
     var p = y[0];
     if (p === "p" || p === "P") {
       var M = Fe[p];
@@ -1295,7 +1295,7 @@ function te(r) {
   var t = b(r), e = t.getFullYear(), a = t.getMonth(), n = /* @__PURE__ */ new Date(0);
   return n.setFullYear(e, a + 1, 0), n.setHours(0, 0, 0, 0), n.getDate();
 }
-function _t(r) {
+function Et(r) {
   h(1, arguments);
   var t = b(r), e = t.getMonth();
   return e;
@@ -1331,7 +1331,7 @@ var X = {
   dateTimeDelimiter: /[T ]/,
   timeZoneDelimiter: /[Z ]/i,
   timezone: /([Z+-].*)$/
-}, Et = /^-?(?:(\d{3})|(\d{2})(?:-?(\d{2}))?|W(\d{2})(?:-?(\d{1}))?|)$/, Ft = /^(\d{2}(?:[.,]\d*)?)(?::?(\d{2}(?:[.,]\d*)?))?(?::?(\d{2}(?:[.,]\d*)?))?$/, It = /^([+-])(\d{2})(?::?(\d{2}))?$/;
+}, _t = /^-?(?:(\d{3})|(\d{2})(?:-?(\d{2}))?|W(\d{2})(?:-?(\d{1}))?|)$/, Ft = /^(\d{2}(?:[.,]\d*)?)(?::?(\d{2}(?:[.,]\d*)?))?(?::?(\d{2}(?:[.,]\d*)?))?$/, It = /^([+-])(\d{2})(?::?(\d{2}))?$/;
 function qt(r) {
   var t = {}, e = r.split(X.dateTimeDelimiter), a;
   if (e.length > 2)
@@ -1358,14 +1358,14 @@ function Ht(r, t) {
 function Lt(r, t) {
   if (t === null)
     return /* @__PURE__ */ new Date(NaN);
-  var e = r.match(Et);
+  var e = r.match(_t);
   if (!e)
     return /* @__PURE__ */ new Date(NaN);
   var a = !!e[4], n = H(e[1]), i = H(e[2]) - 1, o = H(e[3]), l = H(e[4]), u = H(e[5]) - 1;
   if (a)
-    return jt(t, l, u) ? Qt(t, l, u) : /* @__PURE__ */ new Date(NaN);
+    return jt(t, l, u) ? At(t, l, u) : /* @__PURE__ */ new Date(NaN);
   var s = /* @__PURE__ */ new Date(0);
-  return !At(t, i, o) || !Bt(t, n) ? /* @__PURE__ */ new Date(NaN) : (s.setUTCFullYear(t, i, Math.max(n, o)), s);
+  return !Qt(t, i, o) || !Gt(t, n) ? /* @__PURE__ */ new Date(NaN) : (s.setUTCFullYear(t, i, Math.max(n, o)), s);
 }
 function H(r) {
   return r ? parseInt(r) : 1;
@@ -1389,20 +1389,20 @@ function Xt(r) {
   var e = t[1] === "+" ? -1 : 1, a = parseInt(t[2]), n = t[3] && parseInt(t[3]) || 0;
   return zt(a, n) ? e * (a * de + n * le) : NaN;
 }
-function Qt(r, t, e) {
+function At(r, t, e) {
   var a = /* @__PURE__ */ new Date(0);
   a.setUTCFullYear(r, 0, 4);
   var n = a.getUTCDay() || 7, i = (t - 1) * 7 + e + 1 - n;
   return a.setUTCDate(a.getUTCDate() + i), a;
 }
-var Gt = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+var Bt = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 function ve(r) {
   return r % 400 === 0 || r % 4 === 0 && r % 100 !== 0;
 }
-function At(r, t, e) {
-  return t >= 0 && t <= 11 && e >= 1 && e <= (Gt[t] || (ve(r) ? 29 : 28));
+function Qt(r, t, e) {
+  return t >= 0 && t <= 11 && e >= 1 && e <= (Bt[t] || (ve(r) ? 29 : 28));
 }
-function Bt(r, t) {
+function Gt(r, t) {
   return t >= 1 && t <= (ve(r) ? 366 : 365);
 }
 function jt(r, t, e) {
@@ -1437,9 +1437,19 @@ const oe = ["Mon", "Wed", "Fri"], ee = [
     level2: "#40c463",
     level3: "#30a14e",
     level4: "#216e39"
+  },
+  figma: {
+    background: "#F0F1F6",
+    text: "#333333",
+    boxBorderColor: "#D1D5DB",
+    level0: "#FF7262",
+    level1: "#F24E1E",
+    level2: "#1ABCFE",
+    level3: "#A259FF",
+    level4: "#0ACF83"
   }
 }, ue = (r, t) => {
-  const e = _t(r);
+  const e = Et(r);
   let n = Nt(r);
   for (let i = 0; i < e; i++) {
     const o = te(new Date(t, i));
@@ -1506,7 +1516,7 @@ const Kt = (r, t, e) => {
       //TODO: figure out why this 9 is needed, lol cry
     });
   w += l;
-  let k = c + w, _ = 0;
+  let k = c + w, E = 0;
   for (let v = 0; v < ee.length; v++) {
     const N = te(new Date(t, v)), { quotient: F } = he(
       N,
@@ -1515,16 +1525,16 @@ const Kt = (r, t, e) => {
     o += se({
       label: ee[v],
       xPos: k,
-      yPos: _ + 9
+      yPos: E + 9
     }), k = k + F * (s + c) + c;
   }
   T += u;
-  const Y = er(r, t, i), E = $t(new Date(t, 0, 1));
+  const Y = er(r, t, i), _ = $t(new Date(t, 0, 1));
   let x = Math.ceil(Y.length / g);
-  E > 0 && (x += 1);
+  _ > 0 && (x += 1);
   let O = w + c, U = 0;
   for (let v = 0; v < x; v++) {
-    let N = v === 0 ? T + m + E * (d + m) : T + m, F = v === 0 ? E : 0, z = g;
+    let N = v === 0 ? T + m + _ * (d + m) : T + m, F = v === 0 ? _ : 0, z = g;
     for (let R = F; R < z; R++) {
       const y = Y[U];
       if (y) {
