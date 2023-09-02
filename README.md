@@ -75,7 +75,8 @@ const data = {
 ```
 
 ### ssr
-Type: boolean
+Type: boolean (defaults to `false`)
+
 set to true if you want to use this package in server side rendering
 
 ### config
