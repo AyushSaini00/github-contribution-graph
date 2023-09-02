@@ -29,8 +29,8 @@
                     for (let month = 1; month <= 12; month++) {
                         for (let day = 1; day <= this.getDaysInMonth(month, year); day++) {
                             const date = `${year}-${this.padZero(month)}-${this.padZero(day)}`;
-                            const done = Math.floor(Math.random() * 50) + 1; // Random value between 1 and 50
-                            const not_done = Math.floor(Math.random() * 10); // Random value between 0 and 9
+                            const done = Math.floor(Math.random() * 10) + 1;
+                            const not_done = Math.floor(Math.random() * 10);
 
                             if (!data[year]) {
                                 data[year] = [];
@@ -56,6 +56,7 @@
         drawContributionGraph({
             data,
             config: {
+                // graphTheme: "figma",
                 graphMountElement: "#app",
             },
         });

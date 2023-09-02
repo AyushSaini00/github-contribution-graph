@@ -9,4 +9,14 @@ export const THEMES = {
     level3: "#30a14e",
     level4: "#216e39",
   },
+  figma: {
+    background: "#F0F1F6",
+    text: "#333333",
+    boxBorderColor: "#D1D5DB",
+    level0: "#FF7262",
+    level1: "#F24E1E",
+    level2: "#1ABCFE",
+    level3: "#A259FF",
+    level4: "#0ACF83",
+  },
 };
