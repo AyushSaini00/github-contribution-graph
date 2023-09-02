@@ -28,6 +28,7 @@ import drawContributionGraph from "github-contribution-graph";
 
 drawContributionGraph({
   data,
+  ssr: false,
   config: {
     graphMountElement: "#app",
   },
@@ -41,7 +42,7 @@ drawContributionGraph({
 
 ## api
 
-- `drawContributionGraph(data, config)`
+- `drawContributionGraph(data, ssr, config)`
 
 ### data
 
@@ -54,7 +55,7 @@ const data = {
   2023: [
     {
       done: 12,
-      not_done: 4,
+      not_done: 4, // it's fine if you keep not_done as 0
       date: "2023-06-07",
     },
     {
@@ -72,6 +73,10 @@ const data = {
   ],
 };
 ```
+
+### ssr
+Type: boolean
+set to true if you want to use this package in server side rendering
 
 ### config
 
@@ -100,4 +105,4 @@ the css selector of the element to which the contribution graph to be appended
 
 (defaults to `standard`)
 
-theme of the graph
+theme of the graph (check in utils/themes.js for available themes)
