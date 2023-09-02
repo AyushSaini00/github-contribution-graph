@@ -7,6 +7,18 @@ import getIndexOfDayInYear from "./utils/getIndexOfDayInYear.js";
 import getBoxColor from "./utils/getBoxColor.js";
 import getQuotientAndReminder from "./utils/getQuotientAndReminder.js";
 
+/**
+ * Draws a contribution graph using provided data.
+ *
+ * @param {Object} options - Options for drawing the contribution graph.
+ * @param {Object[]} options.data - An array of data points for the contribution graph.
+ * @param {boolean} [options.ssr=false] - Flag indicating if the graph should be rendered on the server side.
+ * @param {Object} [options.config] - Configuration settings for the graph.
+ * @param {string} [options.config.graphTheme="standard"] - Theme to be applied to the graph.
+ * @param {string} [options.config.graphMountElement="body"] - The DOM element where the graph will be mounted.
+ * @param {number} [options.config.graphWidth=723] - Width of the contribution graph.
+ * @param {number} [options.config.graphHeight=113] - Height of the contribution graph.
+ */
 export default function drawContributionGraph({
   data,
   ssr = false,
@@ -23,7 +35,7 @@ export default function drawContributionGraph({
   let allSvgs = "";
 
   years.forEach((year) => {
-    const svg = drawContributionGraphForYear(data[year], ssr, year, {
+    const svg = drawContributionGraphForYear(data[year], year, {
       graphTheme,
       graphMountElement,
       graphWidth,
@@ -45,16 +57,13 @@ export default function drawContributionGraph({
   }
 }
 
-const drawContributionGraphForYear = (data, ssr, year, config) => {
-  const { graphMountElement, graphWidth, graphHeight, graphTheme } = config;
+const drawContributionGraphForYear = (data, year, config) => {
+  const { graphWidth, graphHeight, graphTheme } = config;
 
   let graphSvgString = "";
 
   const dayTextMaxWidth = 28;
-  // const dayFont = { family: "Helvetica", size: 10 };
-
   const monthTextMaxHeight = 14;
-  // const monthFont = { family: "Helvetica", size: 10 };
 
   const boxWidth = 10;
   const boxHeight = 10;
@@ -76,7 +85,7 @@ const drawContributionGraphForYear = (data, ssr, year, config) => {
     graphSvgString += createTextNode({
       label: DAYS[y],
       xPos: daysOffsetX,
-      yPos: daysOffsetY + 9,
+      yPos: daysOffsetY + 9, //TODO: figure out why this 9 is needed, lol cry
     });
   }
 
@@ -156,47 +165,6 @@ const drawContributionGraphForYear = (data, ssr, year, config) => {
   return svgString;
 };
 
-const drawContributionBox = ({
-  draw,
-  boxPositionX,
-  boxPositionY,
-  boxWidth = 10,
-  boxHeight = 10,
-  boxBorderColor = "#1b1f230f",
-  boxBorderWidth = 1,
-  boxBorderRadius = 2,
-  boxData,
-}) => {
-  if (!boxData) return;
-  const { color, done, date } = boxData;
-
-  const tooltipText = done
-    ? `${done} contributions on ${format(parseISO(date), "PPPP")}`
-    : `no contributions on ${format(parseISO(date), "PPPP")}`;
-
-  const boxElement = draw
-    .rect(boxWidth, boxHeight)
-    .move(boxPositionX, boxPositionY)
-    .attr({
-      fill: color,
-      stroke: boxBorderColor,
-      "stroke-width": boxBorderWidth,
-      rx: boxBorderRadius,
-    })
-    .data({
-      "tooltip-text": tooltipText,
-      date: date,
-    });
-
-  boxElement.addClass(`github-contribution-graph-box-${date}`);
-  boxElement.mouseover((e) => {
-    showTooltip(tooltipText, boxPositionX, boxPositionY);
-  });
-  boxElement.mouseout((e) => {
-    hideTooltip();
-  });
-};
-
 const populateData = (initialData, year, graphTheme) => {
   const selectedTheme = THEMES[graphTheme];
   //   const numberOfDaysInYear = getDaysInYear(new Date(year, 0, 1));
@@ -239,7 +207,6 @@ const populateData = (initialData, year, graphTheme) => {
 };
 
 // svg nodes
-
 const createTextNode = ({
   fontFamily = "Helvetica",
   fontSize = 10,
@@ -327,3 +294,44 @@ const hideTooltip = () => {
   );
   tooltipElement.style.visibility = "hidden";
 };
+
+// const drawContributionBox = ({
+//   draw,
+//   boxPositionX,
+//   boxPositionY,
+//   boxWidth = 10,
+//   boxHeight = 10,
+//   boxBorderColor = "#1b1f230f",
+//   boxBorderWidth = 1,
+//   boxBorderRadius = 2,
+//   boxData,
+// }) => {
+//   if (!boxData) return;
+//   const { color, done, date } = boxData;
+
+//   const tooltipText = done
+//     ? `${done} contributions on ${format(parseISO(date), "PPPP")}`
+//     : `no contributions on ${format(parseISO(date), "PPPP")}`;
+
+//   const boxElement = draw
+//     .rect(boxWidth, boxHeight)
+//     .move(boxPositionX, boxPositionY)
+//     .attr({
+//       fill: color,
+//       stroke: boxBorderColor,
+//       "stroke-width": boxBorderWidth,
+//       rx: boxBorderRadius,
+//     })
+//     .data({
+//       "tooltip-text": tooltipText,
+//       date: date,
+//     });
+
+//   boxElement.addClass(`github-contribution-graph-box-${date}`);
+//   boxElement.mouseover((e) => {
+//     showTooltip(tooltipText, boxPositionX, boxPositionY);
+//   });
+//   boxElement.mouseout((e) => {
+//     hideTooltip();
+//   });
+// };
