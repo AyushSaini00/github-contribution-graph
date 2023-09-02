@@ -40,6 +40,8 @@ export default function drawContributionGraph({
       mountElem.appendChild(tempContainer.firstChild);
     }
     drawTooltip();
+  } else {
+    return allSvgs;
   }
 }
 

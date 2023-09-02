@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <div>github contribution graph demo:</div>
+    <div>github contribution graph client side rendering demo:</div>
     <div>refresh to randomize :)</div>
     <br>
     <br>
@@ -18,23 +18,28 @@
     <div>check out the <a href="https://www.npmjs.com/package/github-contribution-graph">library</a></div>
 
     <script type="module">
-        import drawContributionGraph from "./src/index.js";
+        // import drawContributionGraph from "./dist/github-contribution-graph.es.js"; // for prod build
+        import drawContributionGraph from "./src/index.js"; // for dev
         const randomData = {
-            generator() {
+            generator({ years = [] }) {
                 const data = {};
-                for (let month = 1; month <= 12; month++) {
-                    for (let day = 1; day <= this.getDaysInMonth(month, 2023); day++) {
-                        const date = `${2023}-${this.padZero(month)}-${this.padZero(day)}`;
-                        const done = Math.floor(Math.random() * 50) + 1; // Random value between 1 and 50
-                        const not_done = Math.floor(Math.random() * 10); // Random value between 0 and 9
+                if (!years.length) return data;
 
-                        if (!data[2023]) {
-                            data[2023] = [];
+                years.forEach(year => {
+                    for (let month = 1; month <= 12; month++) {
+                        for (let day = 1; day <= this.getDaysInMonth(month, year); day++) {
+                            const date = `${year}-${this.padZero(month)}-${this.padZero(day)}`;
+                            const done = Math.floor(Math.random() * 50) + 1; // Random value between 1 and 50
+                            const not_done = Math.floor(Math.random() * 10); // Random value between 0 and 9
+
+                            if (!data[year]) {
+                                data[year] = [];
+                            }
+                            data[year].push({ done, not_done, date });
                         }
-
-                        data[2023].push({ done, not_done, date });
                     }
-                }
+                })
+
 
                 return data;
             },
@@ -46,7 +51,7 @@
             }
         }
 
-        const data = randomData.generator();
+        const data = randomData.generator({ years: [2023, 2022] });
 
         drawContributionGraph({
             data,
