@@ -8,32 +8,46 @@
 </head>
 
 <body>
-    <div>hello</div>
+    <div>github contribution graph demo:</div>
+    <div>refresh to randomize :)</div>
+    <br>
+    <br>
     <div id="app"></div>
+    <br>
+    <br>
+    <div>check out the <a href="https://www.npmjs.com/package/github-contribution-graph">library</a></div>
 
     <script type="module">
         import drawContributionGraph from "./src/index.js";
-        const data = {
-            2023: [
-                {
-                    done: 12,
-                    not_done: 4,
-                    date: "2023-06-07",
-                },
-                {
-                    done: 3,
-                    not_done: 6,
-                    date: "2023-02-25",
-                },
-            ],
-            2022: [
-                {
-                    done: 7,
-                    not_done: 3,
-                    date: "2022-08-01",
-                },
-            ],
-        };
+        const randomData = {
+            generator() {
+                const data = {};
+                for (let month = 1; month <= 12; month++) {
+                    for (let day = 1; day <= this.getDaysInMonth(month, 2023); day++) {
+                        const date = `${2023}-${this.padZero(month)}-${this.padZero(day)}`;
+                        const done = Math.floor(Math.random() * 50) + 1; // Random value between 1 and 50
+                        const not_done = Math.floor(Math.random() * 10); // Random value between 0 and 9
+
+                        if (!data[2023]) {
+                            data[2023] = [];
+                        }
+
+                        data[2023].push({ done, not_done, date });
+                    }
+                }
+
+                return data;
+            },
+            getDaysInMonth(month, year) {
+                return new Date(year, month, 0).getDate();
+            },
+            padZero(number) {
+                return number.toString().padStart(2, '0');
+            }
+        }
+
+        const data = randomData.generator();
+
         drawContributionGraph({
             data,
             config: {
