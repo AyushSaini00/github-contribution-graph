@@ -37,8 +37,8 @@ drawContributionGraph({
 
 ## demo
 
-- [csr demo](https://stackblitz.com/edit/csr-github-contribution-graph-demo?file=index.js)
-<!-- - [ssr demo]() -->
+- [CSR (Client Side Rendering) demo](https://stackblitz.com/edit/csr-github-contribution-graph-demo?file=index.js)
+- [SSR (Server Side Rendering) demo](https://stackblitz.com/edit/ssr-github-contribution-graph-demo?file=pages%2Findex.js)
 
 ## api
 
