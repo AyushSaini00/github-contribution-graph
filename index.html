@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>github contribution graph</title>
+</head>
+
+<body>
+    <div>hello</div>
+    <div id="app"></div>
+
+    <script type="module">
+        import drawContributionGraph from "./src/index.js";
+        const data = {
+            2023: [
+                {
+                    done: 12,
+                    not_done: 4,
+                    date: "2023-06-07",
+                },
+                {
+                    done: 3,
+                    not_done: 6,
+                    date: "2023-02-25",
+                },
+            ],
+            2022: [
+                {
+                    done: 7,
+                    not_done: 3,
+                    date: "2022-08-01",
+                },
+            ],
+        };
+        drawContributionGraph({
+            data,
+            config: {
+                graphMountElement: "#app",
+            },
+        });
+    </script>
+</body>
+
+</html>
