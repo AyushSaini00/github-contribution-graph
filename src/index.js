@@ -1,11 +1,8 @@
 "use strict";
 
 import { format, getDay, getDaysInMonth, parseISO } from "date-fns";
-import { MONTHS, DAYS } from "./utils/constants.js";
-import { THEMES } from "./utils/themes.js";
-import getIndexOfDayInYear from "./utils/getIndexOfDayInYear.js";
-import getBoxColor from "./utils/getBoxColor.js";
-import getQuotientAndReminder from "./utils/getQuotientAndReminder.js";
+import THEMES from "./themes.js";
+import utils from "./utils.js";
 
 /**
  * Draws a contribution graph using provided data.
@@ -18,12 +15,19 @@ import getQuotientAndReminder from "./utils/getQuotientAndReminder.js";
  * @param {string} [options.config.graphMountElement="body"] - The DOM element where the graph will be mounted.
  * @param {number} [options.config.graphWidth=723] - Width of the contribution graph.
  * @param {number} [options.config.graphHeight=113] - Height of the contribution graph.
+ * @param {Object} [options.config.customTheme] - object to add if graphTheme is set to "custom"
+ * @param {string} [options.config.customTheme.level0] - level0 color value
+ * @param {string} [options.config.customTheme.level1] - level1 color value
+ * @param {string} [options.config.customTheme.level2] - level2 color value
+ * @param {string} [options.config.customTheme.level3] - level3 color value
+ * @param {string} [options.config.customTheme.level4] - level4 color value
  */
 export default function drawContributionGraph({
   data,
   ssr = false,
   config: {
     graphTheme = "standard",
+    customTheme = {},
     graphMountElement = "body",
     graphWidth = 723,
     graphHeight = 113,
@@ -33,10 +37,24 @@ export default function drawContributionGraph({
   if (!years.length) return;
 
   let allSvgs = "";
+  let selectedTheme;
+
+  if (graphTheme === "custom") {
+    selectedTheme = customTheme;
+  } else if (Object.keys(THEMES).includes(graphTheme)) {
+    selectedTheme = THEMES[graphTheme]
+      ? THEMES[graphTheme]
+      : THEMES["standard"];
+  } else {
+    console.warn(
+      "The specified graphTheme is not recognized. Defaulting to the 'standard' theme. Please ensure your chosen theme is listed in themes.js."
+    );
+    selectedTheme = THEMES["standard"];
+  }
 
   years.forEach((year) => {
     const svg = drawContributionGraphForYear(data[year], year, {
-      graphTheme,
+      selectedTheme,
       graphMountElement,
       graphWidth,
       graphHeight,
@@ -58,7 +76,7 @@ export default function drawContributionGraph({
 }
 
 const drawContributionGraphForYear = (data, year, config) => {
-  const { graphWidth, graphHeight, graphTheme } = config;
+  const { graphWidth, graphHeight, selectedTheme } = config;
 
   let graphSvgString = "";
 
@@ -78,12 +96,12 @@ const drawContributionGraphForYear = (data, year, config) => {
   let daysOffsetX = offsetX;
   let daysOffsetY;
 
-  for (let y = 0; y < DAYS.length; y++) {
+  for (let y = 0; y < utils.constants.DAYS.length; y++) {
     daysOffsetY =
       (2 * y + 1) * boxHeight + 2 * (y + 1) * boxGapY + monthTextMaxHeight;
 
     graphSvgString += createTextNode({
-      label: DAYS[y],
+      label: utils.constants.DAYS[y],
       xPos: daysOffsetX,
       yPos: daysOffsetY + 9, //TODO: figure out why this 9 is needed, lol cry
     });
@@ -95,15 +113,15 @@ const drawContributionGraphForYear = (data, year, config) => {
   let monthsOffsetX = boxGapX + offsetX;
   let monthsOffsetY = 0;
 
-  for (let x = 0; x < MONTHS.length; x++) {
+  for (let x = 0; x < utils.constants.MONTHS.length; x++) {
     const numberOfDaysInMonth = getDaysInMonth(new Date(year, x));
-    const { quotient } = getQuotientAndReminder(
+    const { quotient } = utils.getQuotientAndReminder(
       numberOfDaysInMonth,
       maxBoxesInColumn
     );
 
     graphSvgString += createTextNode({
-      label: MONTHS[x],
+      label: utils.constants.MONTHS[x],
       xPos: monthsOffsetX,
       yPos: monthsOffsetY + 9,
     });
@@ -114,7 +132,7 @@ const drawContributionGraphForYear = (data, year, config) => {
   offsetY += monthTextMaxHeight;
 
   // draw boxes
-  const populatedData = populateData(data, year, graphTheme);
+  const populatedData = populateData(data, year, selectedTheme);
   const dayOfFirstDayOfYear = getDay(new Date(year, 0, 1));
   let totalColumns = Math.ceil(populatedData.length / maxBoxesInColumn);
   if (dayOfFirstDayOfYear > 0) {
@@ -160,15 +178,15 @@ const drawContributionGraphForYear = (data, year, config) => {
     width: graphWidth,
     height: graphHeight,
     children: graphSvgString,
+    id: `github-contribution-graph-${year}`,
+    className: `github-contribution-graph-${year}`,
   });
 
   return svgString;
 };
 
-const populateData = (initialData, year, graphTheme) => {
-  const selectedTheme = THEMES[graphTheme];
-  //   const numberOfDaysInYear = getDaysInYear(new Date(year, 0, 1));
-  const daysInMonthInYear = MONTHS.map((month, ind) =>
+const populateData = (initialData, year, selectedTheme) => {
+  const daysInMonthInYear = utils.constants.MONTHS.map((month, ind) =>
     getDaysInMonth(new Date(year, ind))
   );
 
@@ -177,7 +195,7 @@ const populateData = (initialData, year, graphTheme) => {
   daysInMonthInYear.forEach((month, monthIndex) => {
     for (let day = 1; day <= month; day++) {
       const date = format(new Date(year, monthIndex, day), "yyyy-MM-dd");
-      const dayIndex = getIndexOfDayInYear(parseISO(date), year);
+      const dayIndex = utils.getIndexOfDayInYear(parseISO(date), year);
 
       finalArr.push({
         done: 0,
@@ -192,8 +210,8 @@ const populateData = (initialData, year, graphTheme) => {
   const maxValueOfDone = initialData.sort((a, b) => b.done - a.done)[0].done;
   const filledEnteries = initialData
     .map((d) => ({
-      dayIndex: getIndexOfDayInYear(parseISO(d.date), year),
-      color: getBoxColor(d.done, maxValueOfDone, selectedTheme),
+      dayIndex: utils.getIndexOfDayInYear(parseISO(d.date), year),
+      color: utils.getBoxColor(d.done, maxValueOfDone, selectedTheme),
       ...d,
     }))
     .sort((a, b) => a.dayIndex - b.dayIndex);
@@ -248,7 +266,7 @@ const createRectNode = ({
   `;
 };
 
-const createYearGraphNode = ({ width, height, children }) => {
+const createYearGraphNode = ({ width, height, children, id, className }) => {
   return `
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
@@ -256,6 +274,8 @@ const createYearGraphNode = ({ width, height, children }) => {
     xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 ${width} ${height}"
     width="${width}" height="${height}"
+    id="${id}"
+    class="${className}"
     >${children}</svg>
   `;
 };

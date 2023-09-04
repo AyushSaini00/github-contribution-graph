@@ -1,4 +1,4 @@
-export const THEMES = {
+const THEMES = {
   standard: {
     background: "#ffffff",
     text: "#000000",
@@ -10,13 +10,15 @@ export const THEMES = {
     level4: "#216e39",
   },
   figma: {
-    background: "#F0F1F6",
-    text: "#333333",
-    boxBorderColor: "#D1D5DB",
-    level0: "#FF7262",
+    background: "#ffffff",
+    text: "#000000",
+    boxBorderColor: "#00000020",
+    level0: "#e5e5e5",
     level1: "#F24E1E",
     level2: "#1ABCFE",
     level3: "#A259FF",
     level4: "#0ACF83",
   },
 };
+
+export default THEMES;

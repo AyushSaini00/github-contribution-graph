@@ -5,11 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>github contribution graph</title>
+    <style>
+        svg {
+            background: #000;
+            padding: 12px 16px;
+            border-radius: 12px;
+            fill: white;
+        }
+    </style>
 </head>
 
 <body>
     <div>github contribution graph client side rendering demo:</div>
     <div>refresh to randomize :)</div>
+    <!-- <form>
+        <div>
+            <label for="change_theme">change theme:</label>
+            <select id="change_theme" name="change_theme">
+                <option value="standard">standard</option>
+                <option value="figma">figma</option>
+            </select>
+        </div>
+    </form> -->
     <br>
     <br>
     <div id="app"></div>
@@ -52,12 +69,53 @@
         }
 
         const data = randomData.generator({ years: [2023, 2022] });
+        // const data = {
+        //     2023: [
+        //         {
+        //             "done": 1,
+        //             "not_done": 0,
+        //             "date": "2023-09-03"
+        //         },
+        //         {
+        //             "done": 1,
+        //             "not_done": 0,
+        //             "date": "2023-08-31"
+        //         },
+        //         {
+        //             "done": 1,
+        //             "not_done": 0,
+        //             "date": "2023-08-20"
+        //         },
+        //         {
+        //             "done": 10,
+        //             "not_done": 0,
+        //             "date": "2023-08-19"
+        //         },
+        //         {
+        //             "done": 1,
+        //             "not_done": 0,
+        //             "date": "2023-08-14"
+        //         },
+        //         {
+        //             "done": 2,
+        //             "not_done": 0,
+        //             "date": "2023-08-13"
+        //         }
+        //     ]
+        // }
+
+        // const selectElem = document.querySelector("#change_theme");
+        // selectElem.addEventListener("change", evt => {
+        //     const selectedValue = selectElem.value;
+        //     console.log(selectedValue)
+        // })
+
 
         drawContributionGraph({
             data,
             config: {
-                // graphTheme: "figma",
                 graphMountElement: "#app",
+                graphTheme: "figmaa",
             },
         });
     </script>
