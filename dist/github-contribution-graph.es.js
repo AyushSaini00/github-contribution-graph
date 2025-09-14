@@ -1467,7 +1467,7 @@ const R = {
       return e.level2;
     if (r >= 3 * a && r < 4 * a)
       return e.level3;
-    if (r > 4 * a)
+    if (r >= 4 * a)
       return e.level4;
   },
   getIndexOfDayInYear(r, t) {
