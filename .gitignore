@@ -1,4 +1,5 @@
 /node_modules
 /demo
-/demo-ssr
+/ssr-demo
 .DS_Store
+index.html

@@ -36,7 +36,7 @@ const utils = {
       return selectedTheme.level2;
     } else if (done >= 3 * quotient && done < 4 * quotient) {
       return selectedTheme.level3;
-    } else if (done > 4 * quotient) {
+    } else if (done >= 4 * quotient) {
       return selectedTheme.level4;
     }
   },
